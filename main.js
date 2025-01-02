@@ -9,8 +9,10 @@ if(isTouchSupported){
 const height = window.innerHeight;
 const width = window.innerWidth;
 
-const fontsize = 12;
-
+var fontsize = 12;
+if(isTouchSupported){
+var fontsize = 24;
+}
 const charWidth = Math.floor(width/(fontsize * 0.6));
 const charHeight = Math.floor(height/(fontsize*1.2));
 
@@ -27,7 +29,8 @@ var matrix = new Array(charHeight);
 Water.innerHTML = "<h1>Try to click somewhere =)</h1> <h2>Left click - add water</h2> <h2>Right click - remove water</h2> <h2>To change brushsize use + or -</h2>"; 
 
 if(isTouchSupported){
-Water.innerHTML = "<h1>Try to tap somewhere =)</h1>" 
+Water.innerHTML = "<h1>Try to tap somewhere =)</h1> <h2>Double tap to switch between erase and draw mode</h2>" 
+
 }
 
 var brushsize = 3;
@@ -57,7 +60,6 @@ var pos = null;
 var isMouseDown = false;
 var isRightMouseDown = false;
 var isStarted = false;
-
 
 function ClickHandle() {
         if(!isRightMouseDown){
@@ -127,6 +129,18 @@ document.addEventListener("keypress", function(event) {
 
 var posTouch = null;
 var isTouchDown = false;
+var doubleTouchWait = 150; // in miliseconds 
+var clickTimer = null;
+var insertValue = WaterChars.length-1;
+
+function SwitchMode(){
+    if(insertValue == WaterChars.length-1){
+        insertValue = 0;
+    }else{
+        insertValue = WaterChars.length-1;
+    }
+}
+
 function TouchHandle(e){
     let x = Math.floor(posTouch[0] / (fontsize * 0.6));
     let y = Math.floor((height - posTouch[1]) / (fontsize * 1.2));
@@ -137,7 +151,7 @@ function TouchHandle(e){
         let nj = y + j;
 
         if (ni >= 1 && ni < charWidth - 1 && nj >= 1 && nj < charHeight - 1) {
-            matrix[nj][ni] = WaterChars.length - 1;
+            matrix[nj][ni] = insertValue;
         }
 
     }}
@@ -145,14 +159,21 @@ function TouchHandle(e){
 }
 
 function onTouch(e){
-    console.log(e.touches[0].pageX, e.touches[0].pageY);
-    console.log(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
+    e.preventDefault();
     isTouchDown = true;
+   
     if(!isStarted){
         isStarted = false;
         updateWater();
     }
-    onTouchMove(e);
+   
+    if(clickTimer == null){
+        clickTimer = setTimeout(()=>{clickTimer = null; onTouchMove(e)},doubleTouchWait);
+    }else{
+        clearTimeout(clickTimer);
+        clickTimer = null;
+        SwitchMode();
+    }
 }  
 function onTouchMove(e){
     posTouch = [e.touches[0].pageX, e.touches[0].pageY] || [e.changedTouches[0].pageX, e.changedTouches[0].pageY];
@@ -170,7 +191,6 @@ document.addEventListener("touchstart",onTouch);
 document.addEventListener("touchmove",onTouchMove);
 document.addEventListener("touchcancel",onTouchUp);
 document.addEventListener("touchend",onTouchUp);
-
 // computer device
 document.addEventListener("mousedown", MouseDown);
 document.addEventListener("mousemove", MousePos);
