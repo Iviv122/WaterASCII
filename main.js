@@ -1,3 +1,11 @@
+const isTouchSupported = "touchstart" in window || window.navigator.maxTouchPoints;
+
+if(isTouchSupported){
+    console.log("Touch supported");
+}else{
+    console.log("Touch unsopported");
+}
+
 const height = window.innerHeight;
 const width = window.innerWidth;
 
@@ -17,6 +25,10 @@ var WaterChars = " '.,`^:;~*+-_=*#&8%@$";
 var matrix = new Array(charHeight);
 
 Water.innerHTML = "<h1>Try to click somewhere =)</h1> <h2>Left click - add water</h2> <h2>Right click - remove water</h2> <h2>To change brushsize use + or -</h2>"; 
+
+if(isTouchSupported){
+Water.innerHTML = "<h1>Try to tap somewhere =)</h1>" 
+}
 
 var brushsize = 3;
 
@@ -47,7 +59,7 @@ var isRightMouseDown = false;
 var isStarted = false;
 
 
-function ClickHandle(e) {
+function ClickHandle() {
         if(!isRightMouseDown){
         
         let x = Math.floor(pos[0] / (fontsize * 0.6)); 
@@ -99,15 +111,8 @@ function MouseDown(event) {
 function MouseUp() {
     isMouseDown = false;
     isRightMouseDown = false;
-
 }
 
-document.addEventListener("mousedown", MouseDown);
-document.addEventListener("mousemove", MousePos);
-document.addEventListener("mouseup", MouseUp);
-document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-});
 document.addEventListener("keypress", function(event) {
     if (event.key == "=" || event.key == "+") {
       brushsize += 1;
@@ -119,6 +124,60 @@ document.addEventListener("keypress", function(event) {
         }
     }
   });
+
+var posTouch = null;
+var isTouchDown = false;
+function TouchHandle(e){
+    let x = Math.floor(posTouch[0] / (fontsize * 0.6));
+    let y = Math.floor((height - posTouch[1]) / (fontsize * 1.2));
+
+    for(let i =-brushsize;i<=brushsize;i++){
+        for(let j=-brushsize;j<=brushsize;j++){
+        let ni = x + i;
+        let nj = y + j;
+
+        if (ni >= 1 && ni < charWidth - 1 && nj >= 1 && nj < charHeight - 1) {
+            matrix[nj][ni] = WaterChars.length - 1;
+        }
+
+    }}
+
+}
+
+function onTouch(e){
+    console.log(e.touches[0].pageX, e.touches[0].pageY);
+    console.log(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
+    isTouchDown = true;
+    if(!isStarted){
+        isStarted = false;
+        updateWater();
+    }
+    onTouchMove(e);
+}  
+function onTouchMove(e){
+    posTouch = [e.touches[0].pageX, e.touches[0].pageY] || [e.changedTouches[0].pageX, e.changedTouches[0].pageY];
+    if(isTouchDown){
+        TouchHandle();
+    }       
+
+} 
+
+function onTouchUp(e){
+    isTouchDown = true;
+}
+// mobile device
+document.addEventListener("touchstart",onTouch);
+document.addEventListener("touchmove",onTouchMove);
+document.addEventListener("touchcancel",onTouchUp);
+document.addEventListener("touchend",onTouchUp);
+
+// computer device
+document.addEventListener("mousedown", MouseDown);
+document.addEventListener("mousemove", MousePos);
+document.addEventListener("mouseup", MouseUp);
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
 
 
 function updateWater() {
