@@ -44,7 +44,7 @@ function updateString(){
 var pos = null;
 var isMouseDown = false;
 var isRightMouseDown = false;
-
+var isStarted = false;
 
 
 function ClickHandle(e) {
@@ -89,10 +89,11 @@ function MouseDown(event) {
     if(event.button == 2){
         isRightMouseDown = true;
     } 
+    if(!isStarted){
+        isStarted = true;
+        updateWater();
+    }
     MousePos(event); 
-
-updateString();
-updateWater();
 }
 
 function MouseUp() {
@@ -118,6 +119,7 @@ document.addEventListener("keypress", function(event) {
         }
     }
   });
+
 
 function updateWater() {
     let newMatrix = JSON.parse(JSON.stringify(matrix));
