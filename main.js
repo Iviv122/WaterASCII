@@ -49,7 +49,6 @@ var isRightMouseDown = false;
 
 function ClickHandle(e) {
         if(!isRightMouseDown){
-        console.log("ee");
         
         let x = Math.floor(pos[0] / (fontsize * 0.6)); 
         let y = Math.floor((height - pos[1]) / (fontsize * 1.2)); 
@@ -65,7 +64,6 @@ function ClickHandle(e) {
         }}}
 
     else{
-        console.log("bb");
         
             let x = Math.floor(pos[0] / (fontsize * 0.6)); 
         let y = Math.floor((height - pos[1]) / (fontsize * 1.2)); 
@@ -110,14 +108,13 @@ document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
 });
 document.addEventListener("keypress", function(event) {
-    console.log(event.key);
     if (event.key == "=") {
       brushsize += 1;
     }else if(event.key == "-"){
         
         brushsize -= 1;
-        if(brushsize <0){
-            brushsize = 1;
+        if(brushsize <=0){
+            brushsize = 0;
         }
     }
   });
