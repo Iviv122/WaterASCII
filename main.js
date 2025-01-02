@@ -4,15 +4,15 @@ const width = window.innerWidth;
 const fontsize = 12;
 
 const charWidth = Math.floor(width/(fontsize * 0.6));
-const charHeight = Math.floor(height/(fontsize*1.25));
+const charHeight = Math.floor(height/(fontsize*1.2));
 
 const Water = document.querySelector("#water");
 
 Water.style.color = "white";
 Water.style.fontSize = `${fontsize}px`;
-Water.style.lineHeight = "1.25"; 
+Water.style.lineHeight = "1.2"; 
 
-var WaterChars = " '..,,`^^:;!!llii~~*+-_?ttffjjrtrnnxxuyvrczwqpdkbhao=*#&8%@$$$$";
+var WaterChars = " '.,`^:;~*+-_=*#&8%@$";
 
 var matrix = new Array(charHeight);
 for(let i=0;i<charHeight;i++){
@@ -37,86 +37,127 @@ function updateString(){
 }
 
 var pos = null;
-var isMouseDown = false; // Flag to track if mouse is held down
+var isMouseDown = false;
+var isRightMouseDown = false;
 
-function ClickHandle() {
-    if (pos !== null) {
-        let x = Math.floor(pos[0] / (fontsize * 0.6)); // Convert to grid position
-        let y = Math.floor((height - pos[1]) / (fontsize * 1.25)); // Convert to grid position
 
-        let ni = x + 0;
-        let nj = y + 0;
+
+function ClickHandle(e) {
+        if(!isRightMouseDown){
+        console.log("ee");
+        
+        let x = Math.floor(pos[0] / (fontsize * 0.6)); 
+        let y = Math.floor((height - pos[1]) / (fontsize * 1.2)); 
+        for(let i =-1;i<=1;i++){
+        for(let j=-1;j<=1;j++){
+        let ni = x + i;
+        let nj = y + j;
 
         if (ni >= 1 && ni < charWidth - 1 && nj >= 1 && nj < charHeight - 1) {
             matrix[nj][ni] = WaterChars.length - 1;
         }
-    }
+
+        }}}
+
+    else{
+        console.log("bb");
+        
+            let x = Math.floor(pos[0] / (fontsize * 0.6)); 
+        let y = Math.floor((height - pos[1]) / (fontsize * 1.2)); 
+        for(let i =-1;i<=1;i++){
+        for(let j=-1;j<=1;j++){
+        let ni = x + i;
+        let nj = y + j;
+
+        if (ni >= 1 && ni < charWidth - 1 && nj >= 1 && nj < charHeight - 1) {
+            matrix[nj][ni] = 0;
+        }
+    }}}
 }
 
 function MousePos(event) {
-    pos = [event.clientX, event.clientY]; // Store mouse position
+    pos = [event.clientX, event.clientY]; 
     if (isMouseDown) {
-        ClickHandle(); // Update the grid based on mouse position when button is held down
+        ClickHandle(event); 
     }
 }
 function MouseDown(event) {
-    isMouseDown = true; // Set flag to true when mouse button is pressed
-    MousePos(event); // Call MousePos to update on mouse down
+    isMouseDown = true;
+    if(event.button == 2){
+        isRightMouseDown = true;
+    } 
+    MousePos(event); 
 
 updateString();
 updateWater();
 }
 
 function MouseUp() {
-    isMouseDown = false; // Set flag to false when mouse button is released
+    isMouseDown = false;
+    isRightMouseDown = false;
+
 }
 
 document.addEventListener("mousedown", MouseDown);
 document.addEventListener("mousemove", MousePos);
 document.addEventListener("mouseup", MouseUp);
-
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
 
 function updateWater() {
-    // Deep copy the matrix to avoid directly modifying the original
     let newMatrix = JSON.parse(JSON.stringify(matrix));
 
-    // Iterate over each cell in the matrix
     for (let i = 0; i < charHeight; i++) {
         for (let j = 0; j < charWidth; j++) {
-            // Process only non-zero cells
             if (matrix[i][j] > 0) {
-                let spreadAmount = Math.floor(matrix[i][j] / 4); // Equal amount to spread to neighbors
+                let spreadAmount = Math.floor(matrix[i][j] / 4); 
 
-                // Spread water to neighboring cells, ensuring bounds are not exceeded
                 if (i + 1 < charHeight && spreadAmount > 0) {
                     newMatrix[i + 1][j] += spreadAmount;
+                    if(newMatrix[i + 1][j] > WaterChars.length-1){
+                        newMatrix[i + 1][j] = WaterChars.length-1;
+                    }
+                    newMatrix[i][j] -= spreadAmount;
                 }
                 if (i - 1 >= 0 && spreadAmount > 0) {
+                    
                     newMatrix[i - 1][j] += spreadAmount;
+                   
+                    if(newMatrix[i - 1][j] > WaterChars.length-1){
+                        newMatrix[i - 1][j] = WaterChars.length-1;
+                    }
+
+                    newMatrix[i][j] -= spreadAmount;
                 }
                 if (j + 1 < charWidth && spreadAmount > 0) {
                     newMatrix[i][j + 1] += spreadAmount;
+                    
+                    if(newMatrix[i][j + 1] > WaterChars.length-1){
+                        newMatrix[i][j + 1] = WaterChars.length-1;
+                    }
+                    
+                    newMatrix[i][j] -= spreadAmount;
                 }
                 if (j - 1 >= 0 && spreadAmount > 0) {
                     newMatrix[i][j - 1] += spreadAmount;
+                    if(newMatrix[i][j - 1] > WaterChars.length-1){
+                        newMatrix[i][j - 1] = WaterChars.length-1;
+                    }
+                    newMatrix[i][j] -= spreadAmount;
                 }
 
-                // Reduce the current cell's water level by the total spread amount
-                newMatrix[i][j] -= spreadAmount * 4;
                 if (newMatrix[i][j] < 0) {
-                    newMatrix[i][j] = 0; // Prevent negative values
+                    newMatrix[i][j] = 0; 
                 }
             }
         }
     }
 
-    // Update the global matrix with the new state
     matrix = newMatrix;
 
-    // Refresh the string representation
     updateString();
 
-    // Recursively call the function with a delay
-    setTimeout(updateWater, 5);
+    setTimeout(updateWater, 10);
 }
 
