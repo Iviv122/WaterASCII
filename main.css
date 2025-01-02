@@ -1,6 +1,8 @@
 body{
     background: black;
     color: white;
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
 .bgtitle{
   position: absolute;
