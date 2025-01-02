@@ -15,6 +15,11 @@ Water.style.lineHeight = "1.2";
 var WaterChars = " '.,`^:;~*+-_=*#&8%@$";
 
 var matrix = new Array(charHeight);
+
+Water.innerHTML = "<h1>Try to click somewhere =)</h1> <h2>Left click - add water</h2> <h2>Right click - remove water</h2> <h2>To change brushsize use + or -</h2>"; 
+
+var brushsize = 3;
+
 for(let i=0;i<charHeight;i++){
     matrix[i] = new Array(charWidth);
     for(let j=0;j<charWidth;j++){
@@ -48,8 +53,8 @@ function ClickHandle(e) {
         
         let x = Math.floor(pos[0] / (fontsize * 0.6)); 
         let y = Math.floor((height - pos[1]) / (fontsize * 1.2)); 
-        for(let i =-1;i<=1;i++){
-        for(let j=-1;j<=1;j++){
+        for(let i =-brushsize;i<=brushsize;i++){
+        for(let j=-brushsize;j<=brushsize;j++){
         let ni = x + i;
         let nj = y + j;
 
@@ -64,8 +69,8 @@ function ClickHandle(e) {
         
             let x = Math.floor(pos[0] / (fontsize * 0.6)); 
         let y = Math.floor((height - pos[1]) / (fontsize * 1.2)); 
-        for(let i =-1;i<=1;i++){
-        for(let j=-1;j<=1;j++){
+        for(let i =-brushsize;i<=brushsize;i++){
+        for(let j=-brushsize;j<=brushsize;j++){
         let ni = x + i;
         let nj = y + j;
 
@@ -104,6 +109,18 @@ document.addEventListener("mouseup", MouseUp);
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
 });
+document.addEventListener("keypress", function(event) {
+    console.log(event.key);
+    if (event.key == "=") {
+      brushsize += 1;
+    }else if(event.key == "-"){
+        
+        brushsize -= 1;
+        if(brushsize <0){
+            brushsize = 1;
+        }
+    }
+  });
 
 function updateWater() {
     let newMatrix = JSON.parse(JSON.stringify(matrix));
