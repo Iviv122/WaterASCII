@@ -3,4 +3,6 @@
 #### Control is simple as it it
 ##### Left click add water
 ##### Right click remove water
-##### +/- to change brush size
+##### +/- keys to change brush size
+
+

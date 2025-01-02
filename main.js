@@ -109,7 +109,7 @@ document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
 });
 document.addEventListener("keypress", function(event) {
-    if (event.key == "=") {
+    if (event.key == "=" || event.key == "+") {
       brushsize += 1;
     }else if(event.key == "-"){
         
