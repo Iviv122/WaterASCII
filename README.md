@@ -1,5 +1,5 @@
 # Water ASCII simulation
-### One click away from amazing views 
+### One click away from amazing views of spreading water
 
 ### On Desktop
 #### Control is simple as it it
@@ -11,6 +11,3 @@
 ### On Phone
 #### Tap or swipe to add water
 #### double tap to switch between draw and erase mode
-
-https://github.com/user-attachments/assets/4268c94b-e73b-4811-832e-c18c463846f1
-
